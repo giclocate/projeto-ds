@@ -1,0 +1,33 @@
+networks:
+  boraimpactar:
+    external: true
+
+services:
+  marketplace_backend:
+    build: ./back
+    container_name: marketplace_backend
+    depends_on:
+      - database
+    environment:
+      DB_HOST: aws-0-sa-east-1.pooler.supabase.com
+      DB_PORT: 5432
+      DB_USER: postgres.gqdwkbmxgulupqlptzor
+      DB_PASS: Y2YcQiQd07uDNXBN
+      DB_NAME: postgres
+    ports:
+      - 3018:3018
+    networks:
+      - boraimpactar
+
+  marketplace_frontend:
+    container_name: marketplace_frontend
+    build: ./front
+    ports:
+      - "3008:3008"
+    environment:
+      - PORT=3008
+    networks:
+      - boraimpactar
+
+volumes:
+  postgres_data:

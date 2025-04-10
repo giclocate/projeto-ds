@@ -2,6 +2,7 @@
   "name": "produtos-sociais-ds-front",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "set PORT=3008 && next dev --turbopack",
     "build": "next build",
@@ -64,6 +65,6 @@
     "prettier": "^3.5.3",
     "tailwindcss": "^3.4.1",
     "ts-node": "^10.9.2",
-    "typescript": "^5.7.3"
+    "typescript": "^5.8.3"
   }
 }

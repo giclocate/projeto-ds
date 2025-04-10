@@ -3,8 +3,8 @@ const sequelize = require('../config/database');
 
 const Favorite = sequelize.define('Favorite', {
   userIdentifier: {
-    type: DataTypes.STRING, 
-    allowNull: false,
+    type: DataTypes.STRING,
+    allowNull: false
   },
   productId: {
     type: DataTypes.INTEGER,
@@ -22,9 +22,8 @@ const Favorite = sequelize.define('Favorite', {
   }
 }, {
   tableName: 'favorites',
+  schema: 'produtos_sociais',
   timestamps: false
 });
 
-
 module.exports = Favorite;
-

@@ -1,77 +1,62 @@
-/************************************************************
- * ARQUIVO: src/app.js
- * RESPONSABILIDADE: Inicializar o servidor Express e carregar rotas
- ************************************************************/
-
 const express = require('express');
-const { sessionMiddleware, setUserSession } = require("./middlewares/sessionMiddleware");
-const app = express(); //Inicialização do server
 const cors = require("cors");
-
-
-// Importa nossa conexão com o banco e models
+const cookieParser = require("cookie-parser");
+const { sessionMiddleware, setUserSession } = require("./middlewares/sessionMiddleware");
 const sequelize = require('./config/database');
-require('./models/product');   // Carregando modelo de Produto
-require('./models/favorite'); // Carregando modelo de Favorito 
 
-// Sincroniza com o banco (cria tabelas se não existirem)
-sequelize.sync({ force: true })
-  .then(() => {
-    console.log('Tabelas sincronizadas com sucesso!');
-  })
-  .catch((err) => {
-    console.error('Erro ao sincronizar tabelas: ', err);
-  });
+// IMPORTA OS MODELOS
+const Product = require('./models/product');
+const Favorite = require('./models/favorite');
 
-// Configura o Express para interpretar JSON do body
+// RELACIONAMENTOS
+Product.hasMany(Favorite, { foreignKey: 'productId' });
+Favorite.belongsTo(Product, { foreignKey: 'productId' });
+
+const app = express();
+
+(async () => {
+  try {
+    await sequelize.authenticate();
+    console.log('✅ Conexão com o banco estabelecida.');
+
+    await sequelize.query(`CREATE SCHEMA IF NOT EXISTS "produtos_sociais";`);
+    console.log('✅ Schema produtos_sociais garantido.');
+
+    // Sincroniza os modelos (em ordem implícita pela relação)
+    await sequelize.sync({ alter: true });
+    console.log('✅ Tabelas sincronizadas.');
+  } catch (err) {
+    console.error('❌ Erro ao sincronizar tabelas:', err);
+  }
+})();
+
+// Middlewares
 app.use(express.json());
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ limit: "50mb", extended: true }));
+app.use(cookieParser());
 
-// session middlewares
+app.use(cors({
+  origin: "http://localhost:3008",
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true
+}));
+
 app.use(sessionMiddleware);
 app.use(setUserSession);
 
-app.use(cors({
-  origin: "http://localhost:3008/", // Permite o frontend acessar a API
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true // Permite cookies e autenticação com credenciais
-}));
+// Rotas
+app.use('/products', require('./routes/products'));
+app.use('/favorites', require('./routes/favorites'));
+app.use('/auth', require('./routes/auth'));
+app.use('/users', require('./routes/users'));
 
-app.use(express.json({limit: "50mb"}));
-app.use(express.urlencoded({ limit: "50mb", extended: true })); //aumentando tamanho max das requisicoes json
-
-// Importa e usa as rotas
-const productRoutes = require('./routes/products');
-// Todas as rotas definidas em productRoutes vão ter como prefixo "/products"
-app.use('/products', productRoutes);
-
-
-//Importa e usa as rotas de favoritos
-const favoriteRoutes = require('./routes/favorites');
-app.use('/favorites', favoriteRoutes);
-
-// Rota básica de teste
 app.get('/', (req, res) => {
   res.send('Servidor rodando!');
 });
 
-//Autenticação do usuário
-const authRoutes = require("./routes/auth");
-app.use("/auth", authRoutes);
-
-//Ativação dos cookies
-const cookieParser = require("cookie-parser");
-app.use(cookieParser());
-
-//Rota para o fi
-const userRoutes = require("./routes/users");
-app.use("/users", userRoutes);
-
-
-// iniciar o servidor
 const PORT = process.env.PORT || 3018;
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
-
-

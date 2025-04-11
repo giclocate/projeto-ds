@@ -7,40 +7,50 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { DM_Sans } from "next/font/google";
 import { useRouter } from "next/navigation";
+
 const dmSans = DM_Sans({ subsets: ["latin"], weight: ["400", "500", "700"] });
+
 const ModalEntry: React.FC = () => {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [erro, setErro] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleClick = () => {
-    router.push("/inventoryManagement");
+  // In your ModalEntry.js component, modify the handleLogin function:
+  // In ModalEntry.js, in the handleLogin function
+  const handleLogin = async (e: { preventDefault: () => void }) => {
+    e.preventDefault();
+    setErro("");
+    setIsLoading(true);
+
+    try {
+      const response = await fetch("http://localhost:3018/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+        credentials: "include", // For cookies
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Store the token with the key name 'token' to match what we're using in api.js
+        if (data.token) {
+          localStorage.setItem("token", data.token);
+        }
+        router.push("/inventoryManagement");
+      } else {
+        setErro(data.error || "Credenciais inválidas.");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      setErro("Erro ao conectar com o servidor. Verifique sua conexão.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  // const handleLogin = async () => {
-  //   setErro("");
-  //   try {
-  //     const response = await fetch("http://localhost:3018/auth/login", {
-  //       method: "POST",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify({ email, password }), // Changed 'senha' to 'password'
-  //       credentials: "include", // Important for cookies
-  //     });
-
-  //     const data = await response.json();
-
-  //     if (response.ok) {
-  //       // The backend sets an HTTP-only cookie, so you don't need to store the token
-  //       router.push("/inventoryManagement");
-  //     } else {
-  //       setErro(data.error || "Credenciais inválidas.");
-  //     }
-  //   } catch (error) {
-  //     console.error(error);
-  //     setErro("Erro ao conectar com o servidor.");
-  //   }
-  // };
   return (
     <div
       style={{
@@ -71,71 +81,74 @@ const ModalEntry: React.FC = () => {
           height: "470px",
         }}
       >
-        <div
-          style={{
-            width: "100%",
-            margin: "0 auto",
-          }}
-        >
+        <form onSubmit={handleLogin}>
           <div
             style={{
-              marginBottom: "20px",
-              display: "flex",
-              justifyContent: "center",
-              flexDirection: "column",
+              width: "100%",
+              margin: "0 auto",
             }}
           >
-            <Image src={logo} alt="Logo" />
-            <div className="relative w-full max-w-sm mt-10">
-              <div className="relative">
-                <label
-                  htmlFor="email"
-                  className="absolute -top-2.5 left-3 bg-white px-1 text-sm text-gray-600"
-                >
-                  Email
-                </label>
-                <Input
-                  type="email"
-                  id="email"
-                  placeholder="Ex: assisju@hotmail.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full rounded-md border border-gray-300 px-3 py-3 text-gray-600 focus:border-gray-400 focus:outline-none focus:ring-0"
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="relative w-full max-w-sm mt-10">
-              <div className="relative">
-                <label
-                  htmlFor="password"
-                  className="absolute -top-2.5 left-3 bg-white px-1 text-sm text-gray-600"
-                >
-                  Senha
-                </label>
-                <Input
-                  type="password"
-                  id="password"
-                  placeholder="Ex: ••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full rounded-md border border-gray-300 px-3 py-3 text-gray-600 focus:border-gray-400 focus:outline-none focus:ring-0"
-                  required
-                />
-              </div>
-            </div>
-
-            {erro && <p className="text-red-500 mt-2">{erro}</p>}
-
-            <Button
-              className={`w-[152px] h-[35px] bg-[#6672FA] text-white rounded-[4px] ml-24 mt-10 ${dmSans.className}`}
-              onClick={handleClick}
+            <div
+              style={{
+                marginBottom: "20px",
+                display: "flex",
+                justifyContent: "center",
+                flexDirection: "column",
+              }}
             >
-              Entrar
-            </Button>
+              <Image src={logo} alt="Logo" />
+              <div className="relative w-full max-w-sm mt-10">
+                <div className="relative">
+                  <label
+                    htmlFor="email"
+                    className="absolute -top-2.5 left-3 bg-white px-1 text-sm text-gray-600"
+                  >
+                    Email
+                  </label>
+                  <Input
+                    type="email"
+                    id="email"
+                    placeholder="Ex: assisju@hotmail.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full rounded-md border border-gray-300 px-3 py-3 text-gray-600 focus:border-gray-400 focus:outline-none focus:ring-0"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="relative w-full max-w-sm mt-10">
+                <div className="relative">
+                  <label
+                    htmlFor="password"
+                    className="absolute -top-2.5 left-3 bg-white px-1 text-sm text-gray-600"
+                  >
+                    Senha
+                  </label>
+                  <Input
+                    type="password"
+                    id="password"
+                    placeholder="Ex: ••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full rounded-md border border-gray-300 px-3 py-3 text-gray-600 focus:border-gray-400 focus:outline-none focus:ring-0"
+                    required
+                  />
+                </div>
+              </div>
+
+              {erro && <p className="text-red-500 mt-2 text-sm">{erro}</p>}
+
+              <Button
+                type="submit"
+                className={`w-[152px] h-[35px] bg-[#6672FA] text-white rounded-[4px] mx-auto mt-10 ${dmSans.className}`}
+                disabled={isLoading}
+              >
+                {isLoading ? "Entrando..." : "Entrar"}
+              </Button>
+            </div>
           </div>
-        </div>
+        </form>
       </div>
     </div>
   );

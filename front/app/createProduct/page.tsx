@@ -10,7 +10,6 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import api from "@/services/api";
-import axios from "axios";
 
 const dmSans = DM_Sans({ subsets: ["latin"], weight: ["400", "500", "700"] });
 
@@ -86,19 +85,9 @@ export default function CreateProduct() {
         picture: pictureBase64,
       };
 
-      // Resgata o token
-      const token = localStorage.getItem("token");
+      // Usando o serviço api em vez do axios diretamente
+      const response = await api.post("/products", productData);
 
-      const response = await axios.post(
-        "http://localhost:3018/products",
-        productData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      
       console.log("Produto cadastrado com sucesso:", response.data);
 
       // Redirecionamento pra home
@@ -269,6 +258,10 @@ export default function CreateProduct() {
             {...register("categoria")}
           />
         </div>
+
+        {submitError && (
+          <div className="text-red-500 mt-2 text-sm">{submitError}</div>
+        )}
 
         <Button
           type="submit"

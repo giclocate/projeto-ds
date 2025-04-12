@@ -74,7 +74,7 @@ export default function Home() {
           </div>
           <div style={{ fontSize: "1.1rem", lineHeight: "1.6" }}>
             O Bora Impactar é uma iniciativa do governo para ampliar o comércio em produções de pessoas de ONGs. Nosso
-            objetivo é criar um espaço onde artesãos talentosos possam mostrar seu trabalho e conectar-se diretamente
+            objetivo é criar um espaço onde artesãs talentosas possam mostrar seu trabalho e conectar-se diretamente
             com consumidores que valorizam produtos artesanais únicos e com propósito.
           </div>
           <div className="mt-8">

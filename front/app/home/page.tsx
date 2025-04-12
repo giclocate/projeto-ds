@@ -6,11 +6,13 @@ import whoAreWe from "../../public/whoAreWe.svg";
 import { DM_Sans } from "next/font/google";
 import { Button } from "@/components/ui/button";
 import ProductCarousel from "@/components/ui/carousel";
-import participantOngs from "../../public/participantOngs.svg";
+
+// import participantOngs from "../../public/participantOngs.svg";
 import Footer from "@/components/ui/footer";
 import { useRouter } from "next/navigation";
 import ModalExplain from "./modal";
 import { useState } from "react";
+
 const dmSans = DM_Sans({ subsets: ["latin"], weight: ["400", "500", "700"] });
 export default function Home() {
   const router = useRouter();

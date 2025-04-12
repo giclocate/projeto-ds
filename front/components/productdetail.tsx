@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Heart } from "lucide-react";
+// import { Heart } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Carousel2 } from "@/components/ui/carousel2";
@@ -44,16 +44,18 @@ export function ProductDetail({ product }: ProductDetailProps) {
               className="absolute left-4 top-4 z-40 p-2 rounded-full bg-white shadow-md hover:bg-gray-50 transition-colors duration-300"
               onClick={() => setIsLiked(!isLiked)}
             >
-              <Heart
+              {/* <Heart
                 className={`w-6 h-6 transition-colors duration-300 ${
                   isLiked ? "text-[#7B61FF]" : "text-blue-600"
                 }`}
-              />
+              /> */}
             </button>
             {images.length > 0 ? (
               <Carousel2 images={images} />
             ) : (
-              <p className="text-gray-500 text-center">Sem imagens disponíveis</p>
+              <p className="text-gray-500 text-center">
+                Sem imagens disponíveis
+              </p>
             )}
           </div>
 
@@ -61,9 +63,9 @@ export function ProductDetail({ product }: ProductDetailProps) {
           <div className="space-y-6">
             <h1 className="text-3xl font-semibold">{product.productName}</h1>
 
-            <div className="inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">
+            {/* <div className="inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">
               10% de desconto no pix
-            </div>
+            </div> */}
 
             <div className="text-3xl font-bold">
               R$ {Number(product.price).toFixed(2)}
@@ -79,7 +81,9 @@ export function ProductDetail({ product }: ProductDetailProps) {
               className="w-full bg-[#6672FA] text-white hover:bg-[#5f6ae3] transition-colors duration-300"
               size="lg"
               onClick={() =>
-                window.open(`https://wa.me/${String(product.whatsappNumber).replace(/\D/g, "")}`)
+                window.open(
+                  `https://wa.me/${String(product.whatsappNumber).replace(/\D/g, "")}`,
+                )
               }
             >
               Entrar em contato no WhatsApp

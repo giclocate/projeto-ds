@@ -39,7 +39,7 @@ export default function ProductPage() {
 
     const fetchProduct = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/products/${id}`);
+        const response = await fetch(`http://localhost:3018/products/${id}`);
         if (!response.ok) throw new Error("Produto não encontrado");
         const data: Product = await response.json();
         setProduct(data);
@@ -73,7 +73,7 @@ export default function ProductPage() {
           ong={product.linkedONG}
         />
         <Separator />
-        <RelatedProducts />
+        {/* <RelatedProducts /> */}
       </div>
       <Footer />
     </div>

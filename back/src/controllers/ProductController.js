@@ -72,10 +72,15 @@ module.exports = {
   getAllProducts: async (req, res) => {
     try {
       const products = await Product.findAll();
-      const formattedProducts = products.map(product => ({
-        ...product.toJSON(),
-        picture: product.picture ? `data:image/jpeg;base64,${product.picture.toString('base64')}` : null //formatacao para o front exibir a imagem
-      }));
+      const formattedProducts = products.map(product => {
+        const productJson = product.toJSON();
+        // Format the image properly if it exists
+        if (productJson.picture) {
+          // Determine image type (assuming JPEG for simplicity)
+          productJson.picture = `data:image/jpeg;base64,${productJson.picture.toString('base64')}`;
+        }
+        return productJson;
+      });
       return res.json(formattedProducts);
     } catch (error) {
       return res.status(500).json({ error: error.message });
